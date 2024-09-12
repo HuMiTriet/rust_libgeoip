@@ -1,29 +1,55 @@
-mod GeoIP_addr_to_num;
-mod GeoIP_id_by_code;
-mod GeoIP_is_private_ipnum_v4;
-mod GeoIP_printf;
-mod _file_exist;
-mod latin1_to_string;
-mod parse_http_proxy;
+use lazy_static::lazy_static;
+use lib_geoip_rust::geoip_setup_custom_directory;
+use std::sync::Mutex;
+use std::{env::args, process};
 
-macro_rules! geoip_printf {
-    ($f:expr, $fmt:expr, $( $args:expr ),* ) => {
-        if $f.is_none() {
-            return;
-        }
+lazy_static! {
+    static ref INFO_FLAG: Mutex<Option<i32>> = Mutex::new(Some(0));
+}
 
-        // Format the string with the provided arguments
-        let formatted_string = format!($fmt, $( $args ),*);
-
-        // Invoke the closure/function with the formatted string
-        $f.as_ref().unwrap()(&formatted_string);
-    };
+fn usage() {
+    eprintln!(
+        "Usage: geoiplookup [-d custom_dir] [-f custom_file] [-v] [-i] <ipaddress|hostname>\n"
+    )
 }
 
 fn main() {
-    let callback = |s: &str| {
-        println!("Callback received: {}", s);
-    };
+    let mut version_flag = 0;
+    let mut hostname: Option<String> = None;
+    let mut custom_directory: Option<String> = None;
+    let mut custom_file: Option<String> = None;
 
-    geoip_printf!(Some(callback), "Hello, {}!", "world");
+    if args().len() < 2 {
+        usage();
+        process::exit(1);
+    }
+
+    let mut args_iter = args().into_iter();
+
+    while let Some(arg) = args_iter.next() {
+        match arg.as_str() {
+            "-v" => version_flag = 1,
+            "-i" => *INFO_FLAG.lock().unwrap() = Some(1),
+            "-f" => {
+                if let Some(file_name) = args_iter.next() {
+                    custom_file = Some(file_name);
+                }
+            }
+            "-d" => {
+                if let Some(dir_name) = args_iter.next() {
+                    custom_directory = Some(dir_name);
+                }
+            }
+            _ => hostname = Some(arg),
+        }
+    }
+
+    if hostname.is_none() {
+        usage();
+        process::exit(1);
+    }
+
+    if custom_directory.is_some() {
+        geoip_setup_custom_directory(custom_directory.unwrap());
+    }
 }
