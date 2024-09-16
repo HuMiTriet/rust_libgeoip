@@ -1,14 +1,69 @@
 use geoip_h::GeoIPDBTypes;
-use std::{cell::OnceCell, env};
+use std::{cell::OnceCell, env, ffi::c_char};
 mod geoip_h;
 
-const NUM_DB_TYPES: usize = 33 + 1;
+const NUM_DB_TYPES: usize = 38 + 1;
 
 const GEOIP_DB_FILE_NAME: OnceCell<[String; NUM_DB_TYPES]> = OnceCell::new();
 const CUSTOM_DIRECTORY: OnceCell<String> = OnceCell::new();
 
+const GeoIPDBDescription: [Option<&'static str>; NUM_DB_TYPES] = [
+    None,
+    Some("GeoIP Country Edition"),
+    Some("GeoIP City Edition, Rev 1"),
+    Some("GeoIP Region Edition, Rev 1"),
+    Some("GeoIP ISP Edition"),
+    Some("GeoIP Organization Edition"),
+    Some("GeoIP City Edition, Rev 0"),
+    Some("GeoIP Region Edition, Rev 0"),
+    Some("GeoIP Proxy Edition"),
+    Some("GeoIP ASNum Edition"),
+    Some("GeoIP Netspeed Edition"),
+    Some("GeoIP Domain Name Edition"),
+    Some("GeoIP Country V6 Edition"),
+    Some("GeoIP LocationID ASCII Edition"),
+    Some("GeoIP Accuracy Radius Edition"),
+    None,
+    None,
+    Some("GeoIP Large Country Edition"),
+    Some("GeoIP Large Country V6 Edition"),
+    None,
+    Some("GeoIP CCM Edition"),
+    Some("GeoIP ASNum V6 Edition"),
+    Some("GeoIP ISP V6 Edition"),
+    Some("GeoIP Organization V6 Edition"),
+    Some("GeoIP Domain Name V6 Edition"),
+    Some("GeoIP LocationID ASCII V6 Edition"),
+    Some("GeoIP Registrar Edition"),
+    Some("GeoIP Registrar V6 Edition"),
+    Some("GeoIP UserType Edition"),
+    Some("GeoIP UserType V6 Edition"),
+    Some("GeoIP City Edition V6, Rev 1"),
+    Some("GeoIP City Edition V6, Rev 0"),
+    Some("GeoIP Netspeed Edition, Rev 1"),
+    Some("GeoIP Netspeed Edition V6, Rev1"),
+    Some("GeoIP Country Confidence Edition"),
+    Some("GeoIP City Confidence Edition"),
+    Some("GeoIP Region Confidence Edition"),
+    Some("GeoIP Postal Confidence Edition"),
+    Some("GeoIP Accuracy Radius Edition V6"),
+];
+
 pub fn geoip_setup_custom_directory(dir: String) {
     CUSTOM_DIRECTORY.get_or_init(|| dir);
+}
+
+#[no_mangle]
+pub extern "C" fn get_db_description(dbtype: i32) -> String {
+    if dbtype as usize >= NUM_DB_TYPES || dbtype < 0 {
+        return "Unknown".to_string();
+    }
+
+    GeoIPDBDescription
+        .get(dbtype as usize)
+        .unwrap()
+        .unwrap_or_else(|| "Unknown")
+        .to_string()
 }
 
 fn _GeoIP_full_path_to(file_name: &str) -> String {
@@ -97,5 +152,3 @@ pub fn _geo_ip_setup_dbfilename() {
         result
     });
 }
-
-pub fn GeoIP_open( )
