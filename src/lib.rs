@@ -1,3 +1,7 @@
+#![allow(non_camel_case_types)]
+#![allow(non_snake_case)]
+#![allow(non_upper_case_globals)]
+
 use geoip_h::GeoIPDBTypes;
 use std::{
     cell::OnceCell,
@@ -8,10 +12,10 @@ mod geoip_h;
 
 const NUM_DB_TYPES: usize = 38 + 1;
 
-const GEOIP_DB_FILE_NAME: OnceCell<[String; NUM_DB_TYPES]> = OnceCell::new();
-const CUSTOM_DIRECTORY: OnceCell<String> = OnceCell::new();
+const GeoIPDBFileName: OnceCell<[String; NUM_DB_TYPES]> = OnceCell::new();
+const GeoIP_custom_directory: OnceCell<String> = OnceCell::new();
 
-const GEO_IP_DB_DESCRIPTION: [Option<&'static str>; NUM_DB_TYPES] = [
+const GeoIPDBDescription: [Option<&'static str>; NUM_DB_TYPES] = [
     None,
     Some("GeoIP Country Edition"),
     Some("GeoIP City Edition, Rev 1"),
@@ -53,29 +57,25 @@ const GEO_IP_DB_DESCRIPTION: [Option<&'static str>; NUM_DB_TYPES] = [
     Some("GeoIP Accuracy Radius Edition V6"),
 ];
 
-pub fn geoip_setup_custom_directory(dir: String) {
-    CUSTOM_DIRECTORY.get_or_init(|| dir);
+pub fn GeoIP_setup_custom_directory(dir: String) {
+    GeoIP_custom_directory.get_or_init(|| dir);
 }
 
-#[no_mangle]
-pub extern "C" fn get_db_description(dbtype: c_int) -> *const c_char {
+fn get_db_description(dbtype: i32) -> String {
     if dbtype as usize >= NUM_DB_TYPES || dbtype < 0 {
-        return CString::new("Unknown").unwrap().into_raw();
+        return "Unknown".to_string();
     }
 
-    CString::new(
-        GEO_IP_DB_DESCRIPTION
-            .get(dbtype as usize)
-            .unwrap()
-            .unwrap_or("Unknown"),
-    )
-    .unwrap()
-    .into_raw()
+    GeoIPDBDescription
+        .get(dbtype as usize)
+        .unwrap()
+        .unwrap_or("Unknown")
+        .to_string()
 }
 
 fn _geo_ip_full_path_to(file_name: &str) -> String {
     let path;
-    if let Some(custom_dir) = CUSTOM_DIRECTORY.get() {
+    if let Some(custom_dir) = GeoIP_custom_directory.get() {
         if custom_dir.chars().last().unwrap() != '/' {
             path = format!("{}/{}", custom_dir, file_name);
         } else {
@@ -90,7 +90,7 @@ fn _geo_ip_full_path_to(file_name: &str) -> String {
 }
 
 pub fn _geo_ip_setup_dbfilename() {
-    GEOIP_DB_FILE_NAME.get_or_init(|| {
+    GeoIPDBFileName.get_or_init(|| {
         const EMPTY_STRING: String = String::new();
         let mut result: [String; NUM_DB_TYPES] = [EMPTY_STRING; NUM_DB_TYPES];
 
