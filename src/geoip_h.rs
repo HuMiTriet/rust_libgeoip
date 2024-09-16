@@ -1,3 +1,5 @@
+#![allow(non_camel_case_types)]
+#![allow(dead_code)]
 pub enum GeoIPDBTypes {
     GEOIP_COUNTRY_EDITION = 1,
     GEOIP_REGION_EDITION_REV0 = 7,
