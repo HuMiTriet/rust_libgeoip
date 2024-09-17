@@ -6,8 +6,9 @@ use geoip_h::GeoIPDBTypes;
 use std::{
     cell::OnceCell,
     env,
-    ffi::{c_char, c_int, CString},
+    ffi::{c_char, c_int, CStr, CString},
 };
+mod bindgen_out;
 mod geoip_h;
 
 const NUM_DB_TYPES: usize = 38 + 1;
@@ -57,8 +58,17 @@ const GeoIPDBDescription: [Option<&'static str>; NUM_DB_TYPES] = [
     Some("GeoIP Accuracy Radius Edition V6"),
 ];
 
-pub fn GeoIP_setup_custom_directory(dir: String) {
-    GeoIP_custom_directory.get_or_init(|| dir);
+#[no_mangle]
+pub extern "C" fn GeoIP_setup_custom_directory(dir: *mut c_char) {
+    if dir.is_null() {
+        return;
+    }
+
+    let c_str = unsafe { CStr::from_ptr(dir) };
+
+    if let Ok(valid_str) = c_str.to_str() {
+        GeoIP_custom_directory.get_or_init(|| valid_str.to_string());
+    }
 }
 
 fn get_db_description(dbtype: i32) -> String {
@@ -89,7 +99,8 @@ fn _geo_ip_full_path_to(file_name: &str) -> String {
     path
 }
 
-pub fn _geo_ip_setup_dbfilename() {
+#[no_mangle]
+pub extern "C" fn _geo_ip_setup_dbfilename() {
     GeoIPDBFileName.get_or_init(|| {
         const EMPTY_STRING: String = String::new();
         let mut result: [String; NUM_DB_TYPES] = [EMPTY_STRING; NUM_DB_TYPES];
