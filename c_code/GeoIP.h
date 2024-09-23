@@ -72,6 +72,7 @@ typedef struct GeoIPTag {
   time_t last_mtime_check;
   off_t dyn_seg_size; /* currently only used by the cityconfidence database */
   unsigned int ext_flags; /* bit 0 teredo support enabled */
+
   FILE *GeoIPDatabase;
   char *file_path;
 } GeoIP;

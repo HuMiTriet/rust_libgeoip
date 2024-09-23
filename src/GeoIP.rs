@@ -3864,6 +3864,7 @@ extern "C" fn GeoIP_open(
     filename: *const ::std::ffi::c_char,
     flags: ::std::ffi::c_int,
 ) -> *mut GeoIP {
+    println!("Rust calling GeoIP_open");
     if filename.is_null() {
         return ptr::null_mut();
     }
@@ -4357,9 +4358,7 @@ extern "C" {
     #[doc = " return return number of known countries"]
     pub fn GeoIP_num_countries() -> ::std::ffi::c_uint;
 }
-extern "C" {
-    pub fn GeoIP_database_info(gi: *mut GeoIP) -> *mut ::std::ffi::c_char;
-}
+
 #[no_mangle]
 pub extern "C" fn GeoIP_database_edition(gi: *const GeoIP) -> __u_char {
     if gi.is_null() {

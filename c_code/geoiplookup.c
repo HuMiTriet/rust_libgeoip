@@ -8,9 +8,10 @@ int main() {
   printf("C code: File mtime check is: %ld at addr: %p \n", gi->mtime,
          &gi->mtime);
 
-  int test = get_fileno(gi);
+  printf("C code: ext_flag is %d \n", gi->ext_flags);
+  printf("C code: fileno helper from rust result: %d \n", get_fileno(gi));
 
-  printf("fileno helper from rust result: %d \n", test);
+  printf("Using Rust alloc GeoIPTag. Info: %s", GeoIP_database_info(gi));
 
   return 0;
 }
