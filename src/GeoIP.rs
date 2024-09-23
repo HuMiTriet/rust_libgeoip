@@ -3697,11 +3697,9 @@ pub type geoipv6_t = in6_addr;
 #[repr(C)]
 // #[derive(Debug, Copy, Clone)]
 pub struct GeoIPTag {
-    pub GeoIPDatabase: Option<std::fs::File>,
-    pub file_path: Option<String>,
-    pub cache: Option<Vec<u8>>,
-    pub index_cache: Option<Vec<u8>>,
-    pub databaseSegments: Option<Vec<u32>>,
+    pub cache: *mut ::std::ffi::c_uchar,
+    pub index_cache: *mut ::std::ffi::c_uchar,
+    pub databaseSegments: *mut ::std::ffi::c_uint,
     pub databaseType: ::std::ffi::c_char,
     pub mtime: time_t,
     pub flags: ::std::ffi::c_int,
@@ -3713,6 +3711,8 @@ pub struct GeoIPTag {
     pub last_mtime_check: time_t,
     pub dyn_seg_size: off_t,
     pub ext_flags: ::std::ffi::c_uint,
+    pub GeoIPDatabase: Option<File>,
+    pub file_path: Option<String>,
 }
 pub type GeoIP = GeoIPTag;
 #[repr(C)]
