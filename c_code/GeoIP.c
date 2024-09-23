@@ -20,6 +20,7 @@
 
 #include "GeoIP.h"
 #include "GeoIP_internal.h"
+#include <sys/time.h>
 
 static geoipv6_t IPV6_NULL;
 
@@ -839,43 +840,46 @@ char *GeoIP_custom_directory = NULL;
 
 void GeoIP_setup_custom_directory(char *dir) { GeoIP_custom_directory = dir; }
 
-char *_GeoIP_full_path_to(const char *file_name) {
-  int len;
-  char *path = malloc(sizeof(char) * 1024);
-
-  if (GeoIP_custom_directory == NULL) {
-#if !defined(_WIN32)
-    memset(path, 0, sizeof(char) * 1024);
-    snprintf(path, sizeof(char) * 1024 - 1, "%s/%s", GEOIPDATADIR, file_name);
-#else
-    char buf[MAX_PATH], *p, *q = NULL;
-    memset(buf, 0, sizeof(buf));
-    len = GetModuleFileNameA(GetModuleHandle(NULL), buf, sizeof(buf) - 1);
-    for (p = buf + len; p > buf; p--) {
-      if (*p == '\\') {
-        if (!q) {
-          q = p;
-        } else {
-          *p = '/';
-        }
-      }
-    }
-    *q = 0;
-    memset(path, 0, sizeof(char) * 1024);
-    snprintf(path, sizeof(char) * 1024 - 1, "%s/%s", buf, file_name);
-#endif
-  } else {
-    len = strlen(GeoIP_custom_directory);
-    if (GeoIP_custom_directory[len - 1] != '/') {
-      snprintf(path, sizeof(char) * 1024 - 1, "%s/%s", GeoIP_custom_directory,
-               file_name);
-    } else {
-      snprintf(path, sizeof(char) * 1024 - 1, "%s%s", GeoIP_custom_directory,
-               file_name);
-    }
-  }
-  return path;
-}
+/* char *_GeoIP_full_path_to(const char *file_name) { */
+/*   int len; */
+/*   char *path = malloc(sizeof(char) * 1024); */
+/**/
+/*   if (GeoIP_custom_directory == NULL) { */
+/* #if !defined(_WIN32) */
+/*     memset(path, 0, sizeof(char) * 1024); */
+/*     snprintf(path, sizeof(char) * 1024 - 1, "%s/%s", GEOIPDATADIR,
+ * file_name); */
+/* #else */
+/*     char buf[MAX_PATH], *p, *q = NULL; */
+/*     memset(buf, 0, sizeof(buf)); */
+/*     len = GetModuleFileNameA(GetModuleHandle(NULL), buf, sizeof(buf) - 1); */
+/*     for (p = buf + len; p > buf; p--) { */
+/*       if (*p == '\\') { */
+/*         if (!q) { */
+/*           q = p; */
+/*         } else { */
+/*           *p = '/'; */
+/*         } */
+/*       } */
+/*     } */
+/*     *q = 0; */
+/*     memset(path, 0, sizeof(char) * 1024); */
+/*     snprintf(path, sizeof(char) * 1024 - 1, "%s/%s", buf, file_name); */
+/* #endif */
+/*   } else { */
+/*     len = strlen(GeoIP_custom_directory); */
+/*     if (GeoIP_custom_directory[len - 1] != '/') { */
+/*       snprintf(path, sizeof(char) * 1024 - 1, "%s/%s",
+ * GeoIP_custom_directory, */
+/*                file_name); */
+/*     } else { */
+/*       snprintf(path, sizeof(char) * 1024 - 1, "%s%s", GeoIP_custom_directory,
+ */
+/*                file_name); */
+/*     } */
+/*   } */
+/*   return path; */
+/* } */
 
 char **GeoIPDBFileName = NULL;
 
@@ -1553,27 +1557,27 @@ unsigned long GeoIP_addr_to_num(const char *addr) {
 /*     gi = GeoIP_open(filePath, flags); */
 /**/
 /*     if (gi) { */
-/*         /* make sure this is the requested database type */ * /
-    /*         int database_type = gi->databaseType; */
-    /*         if (database_type > 105) { */
-    /*             database_type -= 105; */
-    /*         } */
-    /*         /*  type must match, but we accept org and asnum, */
-    /*          *  since domain and *conf database have always the wrong type */
-    /*          *  for historical reason. Maybe we fix it at some point. */
-    /*          */ * /
-    /*         if (database_type == type || database_type == GEOIP_ASNUM_EDITION
-       || */
-    /*             database_type == GEOIP_ORG_EDITION) { */
-    /*             return gi; */
-    /*         } */
-    /*         GeoIP_delete(gi); */
-    /*     } */
-    /**/
-    /*     return NULL; */
-    /* } */
+/*         /* make sure this is the requested database type */
+/*         int database_type = gi->databaseType; */
+/*         if (database_type > 105) { */
+/*             database_type -= 105; */
+/*         } */
+/*         /*  type must match, but we accept org and asnum, */
+/*          *  since domain and *conf database have always the wrong type */
+/*          *  for historical reason. Maybe we fix it at some point. */
+/*          */
+/*         if (database_type == type || database_type == GEOIP_ASNUM_EDITION
+   || */
+/*             database_type == GEOIP_ORG_EDITION) { */
+/*             return gi; */
+/*         } */
+/*         GeoIP_delete(gi); */
+/*     } */
+/**/
+/*     return NULL; */
+/* } */
 
-    GeoIP *GeoIP_new(int flags) {
+GeoIP *GeoIP_new(int flags) {
   GeoIP *gi;
   _GeoIP_setup_dbfilename();
   gi = GeoIP_open(GeoIPDBFileName[GEOIP_COUNTRY_EDITION], flags);
@@ -2682,7 +2686,7 @@ int GeoIP_id_by_code(const char *country) {
 
 unsigned GeoIP_num_countries(void) { return num_GeoIP_countries; }
 
-const char *GeoIP_lib_version(void) { return PACKAGE_VERSION; }
+/* const char *GeoIP_lib_version(void) { return ; } */
 
 int GeoIP_cleanup(void) {
   int i, result = 0;

@@ -38,3 +38,4 @@ gcc -Wall -g ./c_code/caller.c -I . -Ltarget/debug/ -l:libgeopip_rust.so -o call
 ```sh 
 LD_LIBRARY_PATH=target/debug ./caller
 ```
+gcc -Wall -g ./c_code/geoiplookup.c -I . -Ltarget/debug/ -l:libgeopip_rust.so -Lc_code/ -l:GeoIP_c.so -o caller
