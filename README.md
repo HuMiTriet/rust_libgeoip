@@ -36,5 +36,5 @@ gcc -Wall -g ./c_code/caller.c -I . -Ltarget/debug/ -l:libgeopip_rust.so -o call
 6) run the executable
 
 ```sh 
-LD_LIBRARY_PATH=target/debug ./caller                                             
+LD_LIBRARY_PATH=target/debug ./caller
 ```

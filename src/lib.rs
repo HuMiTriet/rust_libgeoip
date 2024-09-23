@@ -3,6 +3,4 @@
 #![allow(non_upper_case_globals)]
 
 mod GeoIP;
-mod GeoIPCity_h;
-mod GeoIP_h;
-mod GeoIP_internal_h;
+mod helper;

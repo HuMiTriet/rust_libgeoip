@@ -8,3 +8,6 @@ name       = "geopip_rust"
 crate-type = ["cdylib"]
 
 [dependencies]
+libc = "0.2.158"
+memmap2 = "0.9.5"
+positioned-io = "0.3.3"
