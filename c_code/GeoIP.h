@@ -195,7 +195,7 @@ extern GEOIP_DATA const char GeoIP_country_continent[256][3];
 
 GEOIP_API void GeoIP_setup_custom_directory(char *dir);
 GEOIP_API GeoIP *GeoIP_open_type(int type, int flags);
-GEOIP_API GeoIP *GeoIP_new(int flags);
+/* GEOIP_API GeoIP *GeoIP_new(int flags); */
 GEOIP_API GeoIP *GeoIP_open(const char *filename, int flags);
 /*
  * WARNING: GeoIP_db_avail() checks for the existence of a database

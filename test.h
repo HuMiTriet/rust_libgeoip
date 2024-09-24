@@ -2540,7 +2540,7 @@ extern void GeoIP_setup_custom_directory(char *dir);
 
 extern GeoIP *GeoIP_open_type(int type_, int flags);
 
-extern GeoIP *GeoIP_new(int flags);
+/* extern GeoIP *GeoIP_new(int flags); */
 
 GeoIP *GeoIP_open(const char *filename, int flags);
 
