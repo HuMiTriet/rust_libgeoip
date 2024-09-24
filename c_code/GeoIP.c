@@ -20,6 +20,7 @@
 
 #include "GeoIP.h"
 #include "GeoIP_internal.h"
+#include "helper.h"
 #include <sys/time.h>
 
 static geoipv6_t IPV6_NULL;
@@ -2063,7 +2064,12 @@ char *GeoIP_database_info(GeoIP *gi) {
     return NULL;
   }
 
-  fno = fileno(gi->GeoIPDatabase);
+  /* fno = fileno(gi->GeoIPDatabase); */
+  fno = get_fileno(gi);
+
+  printf("C code: using GeoIPtag fileno value: %d \n", fno);
+
+  printf("C code: accessing Rust fields: at addr: %p\n", gi->GeoIPDatabase);
 
   _check_mtime(gi);
 
